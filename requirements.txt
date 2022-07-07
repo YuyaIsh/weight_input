@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 psycopg2=2.9.3
 pandas=1.4.2
-=======
-streamlit=1.10.0
-psycopg2=2.9.3
-pandas=1.4.2
->>>>>>> 2bce4d834524b84dd6b1a527c49f8a9024617028
 plotly=5.8.2
+streamlit=1.10.0
