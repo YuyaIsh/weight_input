@@ -1,4 +1,4 @@
-psycopg2==2.9.3
-pandas==1.4.2
-plotly==5.8.2
-streamlit==1.10.0
+psycopg2
+pandas
+plotly
+streamlit
