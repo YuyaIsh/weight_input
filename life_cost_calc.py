@@ -74,17 +74,12 @@ def main():
 
 class ConnectDB:
     def __init__(self):
-        # ip = "10.96.94.25"
-        # port = 5432
-        # dbname = "edgecross"
-        # user = "postgres"
-        # pw = "mtco5332"
-        # self.db_info = f"host={ip} port={port} dbname={dbname} user={user} password={pw}"
-
-        dbname = "life_cost"
-        user = "postgres"
-        pw = "yu0712"
-        self.db_info = f"dbname={dbname} user={user} password={pw}"
+        ip = st.secrets["DB_IP"]
+        port = st.secrets["DB_PORT"]
+        dbname = "bodymake"
+        user = st.secrets["DB_USER"]
+        pw = st.secrets["DB_PW"]
+        self.db_info = f"host={ip} port={port} dbname={dbname} user={user} password={pw}"
 
     def insert_data(self,date,bought_item,price,paid_person):
         sql = f"""
