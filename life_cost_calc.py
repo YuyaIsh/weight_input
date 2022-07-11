@@ -76,7 +76,7 @@ class ConnectDB:
     def __init__(self):
         ip = st.secrets["DB_IP"]
         port = st.secrets["DB_PORT"]
-        dbname = "bodymake"
+        dbname = "life"
         user = st.secrets["DB_USER"]
         pw = st.secrets["DB_PW"]
         self.db_info = f"host={ip} port={port} dbname={dbname} user={user} password={pw}"
