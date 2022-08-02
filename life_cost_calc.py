@@ -50,7 +50,7 @@ def main():
         # ログ確認&削除
     with tab_edit:
         df_concat = pd.concat([df_current_month, df_pre_month])
-        col_df,col_delete = st.columns(2)
+        col_delete,col_df = st.columns(2)
 
         with col_delete:
             try:
