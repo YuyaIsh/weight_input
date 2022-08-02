@@ -6,11 +6,13 @@ import pandas as pd
 def main():
     db = ConnectDB()
     month = datetime.datetime.now().month
-    persons = ["Y","M"]
+    persons = ["雄也","枚"]
     df = db.select_data(month)
 
 
     st.subheader(f"生活費計算 - {month}月")
+
+    st.sidebar.header("aaa")
 
     df_sum = df[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
 
@@ -21,8 +23,7 @@ def main():
         except KeyError:
             total_payments.append(0)
 
-    st.subheader("")
-    st.subheader(f"{persons[0]}:{total_payments[0]} {persons[1]}:{total_payments[1]}")  #各自の合計金額
+    st.subheader(f"{persons[0]}:{total_payments[0]}円 {persons[1]}:{total_payments[1]}円")  #各自の合計金額
 
     calculated_price = abs(total_payments[0]-total_payments[1])  # 差額算出
 
@@ -33,6 +34,7 @@ def main():
         st.subheader(f"{persons[0]}が{calculated_price}円支払う","result")
     else:
         st.subheader("支払額は同じ")
+
 
 
     col_pre_month,col_current_month,_,_,_ = st.columns(5)
