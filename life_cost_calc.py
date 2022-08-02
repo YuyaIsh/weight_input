@@ -3,10 +3,11 @@ import psycopg2
 import datetime
 import pandas as pd
 
+persons = ["雄也","枚"]
+
 def main():
     db = ConnectDB()
     month = datetime.datetime.now().month
-    persons = ["雄也","枚"]
     df_current_month,df_pre_month = db.select_data(month)
 
 
@@ -39,48 +40,11 @@ def main():
 
     # 結果表示
     with tab_result:
-        df_current_month_sum = df_current_month[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
-
-        total_payments = []
-        for i in range(2):
-            try:
-                total_payments.append(df_current_month_sum.at[persons[i],"値段"])
-            except KeyError:
-                total_payments.append(0)
-
-        st.subheader(f"{persons[0]}:{total_payments[0]}円 {persons[1]}:{total_payments[1]}円")  #各自の合計金額
-
-        calculated_price = abs(total_payments[0]-total_payments[1])  # 差額算出
-
-        # 計算結果表示
-        if total_payments[0] > total_payments[1]:
-            st.subheader(f"{persons[1]}が{calculated_price}円支払う","result")
-        elif total_payments[0] < total_payments[1]:
-            st.subheader(f"{persons[0]}が{calculated_price}円支払う","result")
-        else:
-            st.subheader("支払額は同じ")
-
-
-        df_pre_month_sum = df_pre_month[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
-
-        total_payments = []
-        for i in range(2):
-            try:
-                total_payments.append(df_pre_month_sum.at[persons[i],"値段"])
-            except KeyError:
-                total_payments.append(0)
-
-        st.subheader(f"{persons[0]}:{total_payments[0]}円 {persons[1]}:{total_payments[1]}円")  #各自の合計金額
-
-        calculated_price = abs(total_payments[0]-total_payments[1])  # 差額算出
-
-        # 計算結果表示
-        if total_payments[0] > total_payments[1]:
-            st.subheader(f"{persons[1]}が{calculated_price}円支払う","result")
-        elif total_payments[0] < total_payments[1]:
-            st.subheader(f"{persons[0]}が{calculated_price}円支払う","result")
-        else:
-            st.subheader("支払額は同じ")
+        st.subheader(f"{month}月")
+        result_calc_n_display(df_current_month)
+        st.text("")
+        st.subheader(f"{month-1}月")
+        result_calc_n_display(df_pre_month)
 
 
         # ログ確認&削除
@@ -159,5 +123,28 @@ class ConnectDB:
             with conn.cursor() as cur:
                 cur.execute(sql)
             conn.commit()
+
+def result_calc_n_display(df):
+    df_sum = df[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
+
+    total_payments = []
+    for i in range(2):
+        try:
+            total_payments.append(df_sum.at[persons[i],"値段"])
+        except KeyError:
+            total_payments.append(0)
+
+    st.subheader(f"{persons[0]}:{total_payments[0]}円 {persons[1]}:{total_payments[1]}円")  #各自の合計金額
+
+    calculated_price = abs(total_payments[0]-total_payments[1])  # 差額算出
+
+    # 計算結果表示
+    if total_payments[0] > total_payments[1]:
+        st.subheader(f"{persons[1]}が{calculated_price}円支払う","result")
+    elif total_payments[0] < total_payments[1]:
+        st.subheader(f"{persons[0]}が{calculated_price}円支払う","result")
+    else:
+        st.subheader("支払額は同じ")
+
 
 main()
