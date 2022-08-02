@@ -10,7 +10,7 @@ def main():
     df = db.select_data(month)
 
 
-    st.text(f"生活費計算 - {month}月","header")
+    st.text(f"生活費計算 - {month}月")
 
     df_sum = df[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
 
