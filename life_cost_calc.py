@@ -10,7 +10,7 @@ def main():
     df = db.select_data(month)
 
 
-    st.text(f"生活費計算 - {month}月")
+    st.subheader(f"生活費計算 - {month}月")
 
     df_sum = df[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
 
@@ -21,18 +21,18 @@ def main():
         except KeyError:
             total_payments.append(0)
 
-    st.text("")
-    st.text(f"{persons[0]}:{total_payments[0]} {persons[1]}:{total_payments[1]}")  #各自の合計金額
+    st.subheader("")
+    st.subheader(f"{persons[0]}:{total_payments[0]} {persons[1]}:{total_payments[1]}")  #各自の合計金額
 
     calculated_price = abs(total_payments[0]-total_payments[1])  # 差額算出
 
     # 計算結果表示
     if total_payments[0] > total_payments[1]:
-        st.header(f"{persons[1]}が{calculated_price}円支払う","result")
+        st.subheader(f"{persons[1]}が{calculated_price}円支払う","result")
     elif total_payments[0] < total_payments[1]:
-        st.header(f"{persons[0]}が{calculated_price}円支払う","result")
+        st.subheader(f"{persons[0]}が{calculated_price}円支払う","result")
     else:
-        st.header("支払額は同じ")
+        st.subheader("支払額は同じ")
 
 
     col_pre_month,col_current_month,_,_,_ = st.columns(5)
@@ -45,15 +45,15 @@ def main():
 
 
     # データ登録
-    st.text("買ったもの","subheader")
+    st.subheader("買ったもの","subheader")
 
     col_date,col_item,col_price,col_person = st.columns(4)
     with col_date:
         date = st.date_input("日付")
     with col_item:
-        bought_item = st.text_input("買ったもの")
+        bought_item = st.subheader_input("買ったもの")
     with col_price:
-        price = st.text_input("価格")
+        price = st.subheader_input("価格")
     with col_person:
         paid_person = st.radio("払った人",persons,horizontal=True)
 
@@ -62,7 +62,7 @@ def main():
 
 
     # ログ確認&削除
-    st.text("")
+    st.subheader("")
     st.subheader(f"{month}月一覧","subheader")
 
     col_df,col_delete = st.columns(2)
