@@ -9,6 +9,7 @@ def main():
     persons = ["雄也","枚"]
     df = db.select_data(month)
 
+    st.set_page_config(layout="wide")
 
     st.subheader("生活費計算")
 
