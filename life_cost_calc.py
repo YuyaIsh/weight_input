@@ -10,73 +10,62 @@ def main():
     df = db.select_data(month)
 
 
-    st.subheader(f"生活費計算 - {month}月")
+    st.subheader("生活費計算")
 
-    st.sidebar.header("aaa")
-
-    df_sum = df[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
-
-    total_payments = []
-    for i in range(2):
-        try:
-            total_payments.append(df_sum.at[persons[i],"値段"])
-        except KeyError:
-            total_payments.append(0)
-
-    st.subheader(f"{persons[0]}:{total_payments[0]}円 {persons[1]}:{total_payments[1]}円")  #各自の合計金額
-
-    calculated_price = abs(total_payments[0]-total_payments[1])  # 差額算出
-
-    # 計算結果表示
-    if total_payments[0] > total_payments[1]:
-        st.subheader(f"{persons[1]}が{calculated_price}円支払う","result")
-    elif total_payments[0] < total_payments[1]:
-        st.subheader(f"{persons[0]}が{calculated_price}円支払う","result")
-    else:
-        st.subheader("支払額は同じ")
+    tab_input, tab_result, tab_edit = st.tabs(["入力", "計算結果", "データ編集"])
 
 
+    with tab_result:
+        df_sum = df[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
 
-    col_pre_month,col_current_month,_,_,_ = st.columns(5)
-    with col_pre_month:
-        if st.button("前月"):
-            month = month -1
-    with col_current_month:
-        if st.button("今月"):
-            month = datetime.datetime.now().month
+        total_payments = []
+        for i in range(2):
+            try:
+                total_payments.append(df_sum.at[persons[i],"値段"])
+            except KeyError:
+                total_payments.append(0)
+
+        st.subheader(f"{persons[0]}:{total_payments[0]}円 {persons[1]}:{total_payments[1]}円")  #各自の合計金額
+
+        calculated_price = abs(total_payments[0]-total_payments[1])  # 差額算出
+
+        # 計算結果表示
+        if total_payments[0] > total_payments[1]:
+            st.subheader(f"{persons[1]}が{calculated_price}円支払う","result")
+        elif total_payments[0] < total_payments[1]:
+            st.subheader(f"{persons[0]}が{calculated_price}円支払う","result")
+        else:
+            st.subheader("支払額は同じ")
 
 
     # データ登録
-    st.subheader("買ったもの","subheader")
+    with tab_input:
+        col_date,col_item,col_price,col_person = st.columns(4)
+        with col_date:
+            date = st.date_input("日付")
+        with col_item:
+            bought_item = st.text_input("買ったもの")
+        with col_price:
+            price = st.text_input("価格")
+        with col_person:
+            paid_person = st.radio("払った人",persons,horizontal=True)
 
-    col_date,col_item,col_price,col_person = st.columns(4)
-    with col_date:
-        date = st.date_input("日付")
-    with col_item:
-        bought_item = st.text_input("買ったもの")
-    with col_price:
-        price = st.text_input("価格")
-    with col_person:
-        paid_person = st.radio("払った人",persons,horizontal=True)
-
-    if st.button("登録"):
-        db.insert_data(date,bought_item,price,paid_person)
+        if st.button("登録"):
+            db.insert_data(date,bought_item,price,paid_person)
 
 
-    # ログ確認&削除
-    st.subheader("")
-    st.subheader(f"{month}月一覧","subheader")
+        # ログ確認&削除
+    with tab_edit:
+        col_df,col_delete = st.columns(2)
+        with col_df:
+            st.dataframe(df.iloc[::-1],height=300)
 
-    col_df,col_delete = st.columns(2)
-    with col_df:
-        st.dataframe(df.iloc[::-1],height=300)
-
-    with col_delete:
-        with st.expander("データ削除フォーム"):
+        with col_delete:
             id = st.number_input("削除するidを入力",df["id"].min(),df["id"].max(),value=df["id"].max())
             st.subheader(f"{df[df['id']==id].iat[0,2]}")
             if st.button("削除"):
                 db.delete_data(id)
+                st.experimental_rerun()
 
 
 
