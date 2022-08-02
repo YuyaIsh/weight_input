@@ -52,7 +52,7 @@ def main():
         df_concat = pd.concat([df_current_month, df_pre_month])
         col_df,col_delete = st.columns(2)
         with col_df:
-            st.dataframe(df_concat.iloc[::-1],height=300)
+            st.dataframe(df_concat.iloc[::-1],height=250)
 
         with col_delete:
             try:
