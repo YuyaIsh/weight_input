@@ -51,9 +51,9 @@ def main():
     with col_date:
         date = st.date_input("日付")
     with col_item:
-        bought_item = st.subheader_input("買ったもの")
+        bought_item = st.text_input("買ったもの")
     with col_price:
-        price = st.subheader_input("価格")
+        price = st.text_input("価格")
     with col_person:
         paid_person = st.radio("払った人",persons,horizontal=True)
 
