@@ -7,22 +7,44 @@ def main():
     db = ConnectDB()
     month = datetime.datetime.now().month
     persons = ["雄也","枚"]
-    df = db.select_data(month)
+    df_current_month,df_pre_month = db.select_data(month)
 
-    st.set_page_config(layout="wide")
 
     st.subheader("生活費計算")
 
     tab_input, tab_result, tab_edit = st.tabs(["入力", "計算結果", "データ編集"])
 
 
+
+    # データ登録
+    with tab_input:
+        col_date,col_item,col_price,col_person = st.columns(4)
+        with col_date:
+            date = st.date_input("日付")
+        with col_item:
+            bought_item = st.text_input("買ったもの")
+        with col_price:
+            price = st.text_input("価格")
+        with col_person:
+            paid_person = st.radio("払った人",persons,horizontal=True)
+
+        if st.button("登録"):
+            if price == "":
+                st.warning("価格を入力してください。")
+            else:
+                db.insert_data(date,bought_item,price,paid_person)
+                st.experimental_rerun()
+
+
+
+    # 結果表示
     with tab_result:
-        df_sum = df[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
+        df_current_month_sum = df_current_month[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
 
         total_payments = []
         for i in range(2):
             try:
-                total_payments.append(df_sum.at[persons[i],"値段"])
+                total_payments.append(df_current_month_sum.at[persons[i],"値段"])
             except KeyError:
                 total_payments.append(0)
 
@@ -39,32 +61,39 @@ def main():
             st.subheader("支払額は同じ")
 
 
-    # データ登録
-    with tab_input:
-        col_date,col_item,col_price,col_person = st.columns(4)
-        with col_date:
-            date = st.date_input("日付")
-        with col_item:
-            bought_item = st.text_input("買ったもの")
-        with col_price:
-            price = st.text_input("価格")
-        with col_person:
-            paid_person = st.radio("払った人",persons,horizontal=True)
+        df_pre_month_sum = df_pre_month[["値段","人"]].groupby("人").sum()  # 各自の合計金額を計算
 
-        if st.button("登録"):
-            db.insert_data(date,bought_item,price,paid_person)
+        total_payments = []
+        for i in range(2):
+            try:
+                total_payments.append(df_pre_month_sum.at[persons[i],"値段"])
+            except KeyError:
+                total_payments.append(0)
+
+        st.subheader(f"{persons[0]}:{total_payments[0]}円 {persons[1]}:{total_payments[1]}円")  #各自の合計金額
+
+        calculated_price = abs(total_payments[0]-total_payments[1])  # 差額算出
+
+        # 計算結果表示
+        if total_payments[0] > total_payments[1]:
+            st.subheader(f"{persons[1]}が{calculated_price}円支払う","result")
+        elif total_payments[0] < total_payments[1]:
+            st.subheader(f"{persons[0]}が{calculated_price}円支払う","result")
+        else:
+            st.subheader("支払額は同じ")
 
 
         # ログ確認&削除
     with tab_edit:
+        df_concat = pd.concat([df_current_month, df_pre_month])
         col_df,col_delete = st.columns(2)
         with col_df:
-            st.dataframe(df.iloc[::-1],height=300)
+            st.dataframe(df_concat.iloc[::-1],height=300)
 
         with col_delete:
             try:
-                id = st.number_input("削除するidを入力",df["id"].min(),df["id"].max(),value=df["id"].max())
-                st.subheader(f"{df[df['id']==id].iat[0,2]}")
+                id = st.number_input("削除するidを入力",df_concat["id"].min(),df_concat["id"].max(),value=df_concat["id"].max())
+                st.subheader(f"{df_concat[df_concat['id']==id].iat[0,2]}")
                 if st.button("削除"):
                     db.delete_data(id)
                     st.experimental_rerun()
@@ -97,19 +126,29 @@ class ConnectDB:
             conn.commit()
 
     def select_data(self,month):
-        sql = f"""
+        colnames =["id","日付","買い物","値段","人"]
+
+        sql1 = f"""
             SELECT * FROM pay_log
             where extract(month from date) = \'{month}\'
             """
         with psycopg2.connect(self.db_info) as conn:
             with conn.cursor() as cur:
-                cur.execute(sql)
+                cur.execute(sql1)
                 data = list(cur.fetchall())  # 一行1タプルとしてリスト化
+        df_current_month = pd.DataFrame(data,columns=colnames)  # データをデータフレーム化
 
-        colnames =["id","日付","買い物","値段","人"]
-        df = pd.DataFrame(data,columns=colnames)  # データをデータフレーム化
+        sql2 = f"""
+            SELECT * FROM pay_log
+            where extract(month from date) = \'{month-1}\'
+            """
+        with psycopg2.connect(self.db_info) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql2)
+                data = list(cur.fetchall())  # 一行1タプルとしてリスト化
+        df_pre_month = pd.DataFrame(data,columns=colnames)  # データをデータフレーム化
 
-        return df
+        return df_current_month,df_pre_month
 
     def delete_data(self,id):
         sql = f"""
