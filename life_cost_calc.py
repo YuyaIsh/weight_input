@@ -33,7 +33,11 @@ def main():
             if price == "":
                 st.warning("価格を入力してください。")
             else:
-                db.insert_data(date,bought_item,price,paid_person)
+                try:
+                    db.insert_data(date,bought_item,price,paid_person)
+                except:
+                    pass
+                st.success("データ登録に成功しました。")
                 st.experimental_rerun()
 
 
