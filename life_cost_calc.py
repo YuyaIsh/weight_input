@@ -61,12 +61,14 @@ def main():
             st.dataframe(df.iloc[::-1],height=300)
 
         with col_delete:
-            id = st.number_input("削除するidを入力",df["id"].min(),df["id"].max(),value=df["id"].max())
-            st.subheader(f"{df[df['id']==id].iat[0,2]}")
-            if st.button("削除"):
-                db.delete_data(id)
-                st.experimental_rerun()
-
+            try:
+                id = st.number_input("削除するidを入力",df["id"].min(),df["id"].max(),value=df["id"].max())
+                st.subheader(f"{df[df['id']==id].iat[0,2]}")
+                if st.button("削除"):
+                    db.delete_data(id)
+                    st.experimental_rerun()
+            except:
+                pass
 
 
 class ConnectDB:
