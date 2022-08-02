@@ -40,10 +40,10 @@ def main():
 
     # 結果表示
     with tab_result:
-        st.subheader(f"{month}月")
+        st.subheader(f"＜{month}月＞")
         result_calc_n_display(df_current_month)
         st.text("")
-        st.subheader(f"{month-1}月")
+        st.subheader(f"＜{month-1}月＞")
         result_calc_n_display(df_pre_month)
 
 
@@ -140,11 +140,11 @@ def result_calc_n_display(df):
 
     # 計算結果表示
     if total_payments[0] > total_payments[1]:
-        st.subheader(f"{persons[1]}が{calculated_price}円支払う","result")
+        st.subheader(f"  {persons[1]}が{calculated_price}円支払う","result")
     elif total_payments[0] < total_payments[1]:
-        st.subheader(f"{persons[0]}が{calculated_price}円支払う","result")
+        st.subheader(f" {persons[0]}が{calculated_price}円支払う","result")
     else:
-        st.subheader("支払額は同じ")
+        st.subheader(" 支払額は同じ")
 
 
 main()
