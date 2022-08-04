@@ -78,11 +78,6 @@ class ConnectDB:
         pw = st.secrets["password"]
         self.db_info = f"host={ip} port={port} dbname={dbname} user={user} password={pw}"
 
-        # dbname = "life_cost"
-        # user = "postgres"
-        # pw = "yu0712"
-        # self.db_info = f"dbname={dbname} user={user} password={pw}"
-
     def insert_data(self,date,bought_item,price,paid_person):
         sql = f"""
             INSERT INTO pay_log (pay_log_id,date,bought_items,price,person)
