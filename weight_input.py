@@ -56,11 +56,12 @@ def main():
 
 class ConnectDB:
     def __init__(self):
-        ip = "107.22.122.106"
-        port = 5432
-        dbname = "ddlt9vnio30dl2"
-        user = "toyfvzgwkwormw"
-        pw = "c9b5ca00aa1952ec9d0ccbb5db706fb64c54bd4d0a14b45da6500b4e44802139"
+        ip = st.secrets["host"]
+        port = st.secrets["port"]
+        dbname = st.secrets["dbname"]
+        user = st.secrets["user"]
+        pw = st.secrets["password"]
+
 
         self.db_info = f"host={ip} port={port} dbname={dbname} user={user} password={pw}"
 
